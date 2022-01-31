@@ -33,7 +33,6 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     python
      (auto-completion :packages (not all-the-icons counsel ivy-yasnippet))
      (spacemacs-completion :packages (not default-ivy-config))
      spacemacs-navigation
@@ -53,15 +52,28 @@ This function should only modify configuration layer settings."
      ;;syntax-checking
      (clojure :packages (not flycheck-joker counsel-gtags))
      (go :packages (not counsel-gtags))
+     
      (typescript :variables
                 typescript-liner 'eslint
                 typescript-fmt-tool 'prettier
-                typescript-backend 'lsp)
-     (javascript :packages (not web-beautify nodejs-repl))
+                typescript-backend 'lsp 
+                 :packages (not yasnippet))
+     
+     (javascript :variables
+                 javascript-eslint 'eslint
+                 javascript-fmt-on-save t
+                 javascript-backend 'lsp
+                 :packages (not web-beautify nodejs-repl tern skewer-mode counsel-gtags))
+     
+     
+     (react :packages (not web-beautify tern yasnippet))
+     (python :variables
+             python-backend 'lsp
+             :packages (not anaconda-mode counsel-gtags))
      vue
-     (react :packages (not web-beautify))
      treemacs
      prettier
+     markdown
      yaml)
 
 
@@ -73,7 +85,7 @@ This function should only modify configuration layer settings."
    ;; `dotspacemacs/user-config'. To use a local version of a package, use the
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(doom-themes gruvbox-theme afternoon-theme magit js2-mode)
+   dotspacemacs-additional-packages '(osx-clipboard doom-themes gruvbox-theme afternoon-theme magit js2-mode)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -582,31 +594,25 @@ before packages are loaded."
   (setq linum-format "%6d ")
   (setq-default display-line-numbers-width 4)
 
-  ;;(doom-themes-treemacs-config)
-  ;;(load-theme 'doom-1337 t)
 
   (setq-default
    js-indent-level 2
+   js2-basic-offset 2
    js2-ignored-warnings '("msg.extra.trailing.comma")
    js2-highlight-external-variables nil
    js2-strict-missing-semi-warning nil
+   js2-missing-semi-one-line-override nil
    css-indent-offset 2
    web-mode-markup-indent-offset 2
    web-mode-css-indent-offset 2
    web-mode-code-indent-offset 2
-   web-mode-attr-indent-offset 2)
+   web-mode-attr-indent-offset 2
+   web-mode-enable-auto-pairing t
+   web-mode-enable-auto-closing t
+   web-mode-enable-current-element-highlight t
+   web-mode-enable-current-column-highlight nil)
 
-  (setq web-mode-enable-auto-pairing t
-        web-mode-enable-auto-closing t
-        web-mode-enable-current-element-highlight t
-        web-mode-enable-current-column-highlight nil
-        web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 2
-        web-mode-code-indent-offset 2
-        web-mode-attr-indent-offset 2
-        css-indent-offset 2)
-
-  (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'js2-mode-hook 'prettier-js-mode 'rjsx-mode)
   (add-hook 'web-mode-hook 'prettier-js-mode)
   (add-hook 'typescript-mode-hook 'prettier-js-mode)
 
