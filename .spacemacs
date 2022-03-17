@@ -4,7 +4,7 @@
 
 (defun dotspacemacs/layers ()
   "Layer configuration:
-This function should only modify configuration layer settings."
+ This function should only modify configuration layer settings."
   (setq-default
    ;; Base distribution to use. This is a layer contained in the directory
    ;; `+distribution'. For now available distributions are `spacemacs-base'
@@ -20,7 +20,7 @@ This function should only modify configuration layer settings."
    ;; installation feature and you have to explicitly list a layer in the
    ;; variable `dotspacemacs-configuration-layers' to install it.
    ;; (default 'unused)
-   dotspacemacs-enable-lazy-installation 'unused
+   dotspacemacs-enable-lazy-installation nil
 
    ;; If non-nil then Spacemacs will ask for confirmation before installing
    ;; a layer lazily. (default t)
@@ -33,48 +33,68 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     (auto-completion :packages (not all-the-icons counsel ivy-yasnippet))
-     (spacemacs-completion :packages (not default-ivy-config))
-     spacemacs-navigation
-     spacemacs-editing-visual
-     (spacemacs-layouts :packages (not eyebrowse ivy consult))
-     (spacemacs-modeline :packages (not fancy-battery neotree))
-     (spacemacs-evil :packages (not evil-nerd-commenter evil-tutor evil-goggles eldoc )
-                     :variables evil-want-keybinding nil)
+     ;; ----------------------------------------------------------------
+     ;; Example of useful layers you may want to use right away.
+     ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
+     ;; `M-m f e R' (Emacs style) to install them.
+     ;; ----------------------------------------------------------------
+     (auto-completion
+      :packages
+      (not counsel)
+      :variables
+      auto-completion-return-key-behavior nil
+      auto-completion-tab-key-behavior 'complete)
+
+     ;; better-defaults
      emacs-lisp
-     (helm :packages (not ivy))
+     helm
      multiple-cursors
-     org
+     ;; org
      (shell :variables
             shell-default-height 30
-            shell-default-position 'bottom)
-     ;;spell-checking
-     ;;syntax-checking
-     (clojure :packages (not flycheck-joker counsel-gtags))
+            shell-default-position 'bottom
+            :packages (not esh-help ivy magit org projectile xterm-color vi-tilde-fringe ))
+     ;; spell-checking
+     ;; syntax-checking
+     ;; version-control
+     (html :packages (not web-beautify haml-mode slim-mode pug-mode counsel-css))
+     treemacs
+     prettier
+     yaml
+     lsp
+
+     (spacemacs-editing-visual)
+     (spacemacs-navigation)
+     (spacemacs-evil :packages (not evil-nerd-commenter evil-tutor evil-goggles eldoc )
+                     :variables evil-want-keybinding nil)
+     (spacemacs-modeline :packages (not symon fancy-battery neotree))
+
+     ;;(clojure :packages (not flycheck-joker counsel-gtags))
+
      (go :packages (not counsel-gtags))
-     
+     (git :packages (not forge gitignore-templates magit-svn magit-todos org orgit orgit-forge))
+
      (typescript :variables
-                typescript-liner 'eslint
-                typescript-fmt-tool 'prettier
-                typescript-backend 'lsp 
+                 typescript-liner 'eslint
+                 typescript-fmt-tool 'prettier
+                 typescript-backend 'lsp
                  :packages (not yasnippet))
-     
+
      (javascript :variables
                  javascript-eslint 'eslint
                  javascript-fmt-on-save t
                  javascript-backend 'lsp
-                 :packages (not web-beautify nodejs-repl tern skewer-mode counsel-gtags))
-     
-     
+                 :packages (not web-beautify nodejs-repl tern counsel-gtags))
+
+
      (react :packages (not web-beautify tern yasnippet))
+     (vue :packages (not web-beautify tern yasnippet))
+
      (python :variables
-             python-backend 'lsp
+             ;;python-backend 'lsp
              :packages (not anaconda-mode counsel-gtags))
-     vue
-     treemacs
-     prettier
-     markdown
-     yaml)
+
+     )
 
 
    ;; List of additional packages that will be installed without being wrapped
@@ -85,13 +105,21 @@ This function should only modify configuration layer settings."
    ;; `dotspacemacs/user-config'. To use a local version of a package, use the
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(osx-clipboard doom-themes gruvbox-theme afternoon-theme magit js2-mode)
+   dotspacemacs-additional-packages '(afternoon-theme
+                                      gruvbox-theme
+                                      paredit
+                                      paredit-everywhere
+                                      clojure-mode
+                                      rainbow-mode
+                                      rainbow-delimiters
+                                      cider
+                                      flycheck-clojure )
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(counsel-gtags)
+   dotspacemacs-excluded-packages '(clojure counsel counsel-gtags)
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -104,15 +132,19 @@ This function should only modify configuration layer settings."
 
 (defun dotspacemacs/init ()
   "Initialization:
-This function is called at the very beginning of Spacemacs startup,
-before layer configuration.
-It should only modify the values of Spacemacs settings."
+ This function is called at the very beginning of Spacemacs startup,
+ before layer configuration.
+ It should only modify the values of Spacemacs settings."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
-   ;; If non-nil then enable support for the portable dumper. You'll need
-   ;; to compile Emacs 27 from source following the instructions in file
+   ;; If non-nil then enable support for the portable dumper. You'll need to
+   ;; compile Emacs 27 from source following the instructions in file
    ;; EXPERIMENTAL.org at to root of the git repository.
+   ;;
+   ;; WARNING: pdumper does not work with Native Compilation, so it's disabled
+   ;; regardless of the following setting when native compilation is in effect.
+   ;;
    ;; (default nil)
    dotspacemacs-enable-emacs-pdumper nil
 
@@ -207,8 +239,8 @@ It should only modify the values of Spacemacs settings."
    ;; pair of numbers, e.g. `(recents-by-project . (7 .  5))', where the first
    ;; number is the project limit and the second the limit on the recent files
    ;; within a project.
-   dotspacemacs-startup-lists '((recents . 9)
-                                (projects . 7))
+   dotspacemacs-startup-lists '((recents . 7)
+                                (projects . 5))
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -217,7 +249,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-show-startup-list-numbers t
 
    ;; The minimum delay in seconds between number key presses. (default 0.4)
-   dotspacemacs-startup-buffer-multi-digit-delay 0.2
+   dotspacemacs-startup-buffer-multi-digit-delay 0.4
 
    ;; Default major mode for a new empty buffer. Possible values are mode
    ;; names such as `text-mode'; and `nil' to use Fundamental mode.
@@ -242,17 +274,15 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-light
+   dotspacemacs-themes '(gruvbox-dark-hard
                          spacemacs-dark
-                         default
-                         gruvbox-dark-hard
+                         spacemacs-light
                          gruvbox-dark-medium
                          gruvbox-dark-soft
                          gruvbox-light-hard
                          gruvbox-light-medium
                          gruvbox-light-soft
-                        afternoon)
-
+                         afternoon)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -261,7 +291,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator contour :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(doom :separator wave :separator-scale 1.5)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -270,10 +300,11 @@ It should only modify the values of Spacemacs settings."
    ;; Default font or prioritized list of fonts. The `:size' can be specified as
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
-   dotspacemacs-default-font '("Menlo"
-                               :size 13.0
+   dotspacemacs-default-font '("Fira Mono"
+                               :size 12.5
                                :weight normal
-                               :width normal)
+                               :width normal
+                               :powerline-scale 1.0)
 
    ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
@@ -343,7 +374,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
-   dotspacemacs-which-key-delay 0.2
+   dotspacemacs-which-key-delay 0.4
 
    ;; Which-key frame position. Possible values are `right', `bottom' and
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
@@ -384,12 +415,12 @@ It should only modify the values of Spacemacs settings."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-active-transparency 95
+   dotspacemacs-active-transparency 90
 
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-inactive-transparency 95
+   dotspacemacs-inactive-transparency 90
 
    ;; If non-nil show the titles of transient states. (default t)
    dotspacemacs-show-transient-state-title t
@@ -405,11 +436,11 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
-   dotspacemacs-smooth-scrolling nil
+   dotspacemacs-smooth-scrolling t
 
    ;; Show the scroll bar while scrolling. The auto hide time can be configured
    ;; by setting this variable to a number. (default t)
-   dotspacemacs-scroll-bar-while-scrolling nil
+   dotspacemacs-scroll-bar-while-scrolling t
 
    ;; Control line numbers activation.
    ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
@@ -429,12 +460,10 @@ It should only modify the values of Spacemacs settings."
    ;;   :size-limit-kb 1000)
    ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
+   ;;dotspacemacs-line-numbers '(:relative nil
+   ;;                            :visual nil
+   ;;                            :disabled-for-modes dired-modeed-mode markdown-mode org-mode pdf-view-mode)
 
-   dotspacemacs-line-numbers '(:relative nil
-                               :visual nil
-                               :disabled-for-modes dired-mode markdown-mode org-mode pdf-view-mode)
-
-    dotspacemacs-line-numbers nil
 
 
    ;; Code folding method. Possible values are `evil', `origami' and `vimish'.
@@ -478,7 +507,7 @@ It should only modify the values of Spacemacs settings."
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
    ;; (default '("rg" "ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("ag" "rg" "pt" "ack" "grep")
+   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
 
    ;; Format specification for setting the frame title.
    ;; %a - the `abbreviated-file-name', or `buffer-name'
@@ -539,7 +568,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Run `spacemacs/prettify-org-buffer' when
    ;; visiting README.org files of Spacemacs.
-   ;; (default  nil)
+   ;; (default nil)
    dotspacemacs-pretty-docs nil
 
    ;; If nil the home buffer shows the full path of agenda items
@@ -547,53 +576,59 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-home-shorten-agenda-source nil
 
    ;; If non-nil then byte-compile some of Spacemacs files.
-   dotspacemacs-byte-compile nil
-
-
-   dotsp))
+   dotspacemacs-byte-compile nil))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
-This function defines the environment variables for your Emacs session. By
-default it calls `spacemacs/load-spacemacs-env' which loads the environment
-variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
-See the header of this file for more information."
-  (spacemacs/load-spacemacs-env))
+ This function defines the environment variables for your Emacs session. By
+ default it calls `spacemacs/load-spacemacs-env' which loads the environment
+ variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
+ See the header of this file for more information."
+  (spacemacs/load-spacemacs-env)
+  )
 
 (defun dotspacemacs/user-init ()
   "Initialization for user code:
-This function is called immediately after `dotspacemacs/init', before layer
-configuration.
-It is mostly for variables that should be set before packages are loaded.
-If you are unsure, try setting them in `dotspacemacs/user-config' first."
-
-
-  (setq initial-frame-alist '((width . 100) (height . 70)))
+ This function is called immediately after `dotspacemacs/init', before layer
+ configuration.
+ It is mostly for variables that should be set before packages are loaded.
+ If you are unsure, try setting them in `dotspacemacs/user-config' first."
+  (setq initial-frame-alist '((width . 110) (height . 70)))
   (setq-default truncate-lines t)
+
+  (when (string= system-type "darwin")
+    (setq dired-use-ls-dired nil))
+
+  (server-start)
+
   )
 
 
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
-This function is called only while dumping Spacemacs configuration. You can
-`require' or `load' the libraries of your choice that will be included in the
-dump.")
+ This function is called only while dumping Spacemacs configuration. You can
+ `require' or `load' the libraries of your choice that will be included in the
+ dump."
+  )
 
 
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
-This function is called at the very end of Spacemacs startup, after layer
-configuration.
-Put your configuration code here, except for variables that should be set
-before packages are loaded."
+ This function is called at the very end of Spacemacs startup, after layer
+ configuration.
+ Put your configuration code here, except for variables that should be set
+ before packages are loaded."
+  ;;(setq ns-use-srgb-colorspace nil)
 
-  (setq truncate-lines t)
+  (unless (eq system-type 'darwin)
+    (set-fontset-font "fontset-default" 'korean-ksc5601 "NanumGothic-*"))
+
+
   (setq create-lockfiles nil)
   (setq custom-file (make-temp-file "emacs-custom"))
   (setq default-directory (concat (getenv "HOME") "/"))
   (setq linum-format "%6d ")
-  (setq-default display-line-numbers-width 4)
-
+  (setq dired-listing-switches "-alh" )
 
   (setq-default
    js-indent-level 2
@@ -612,9 +647,16 @@ before packages are loaded."
    web-mode-enable-current-element-highlight t
    web-mode-enable-current-column-highlight nil)
 
-  (add-hook 'js2-mode-hook 'prettier-js-mode 'rjsx-mode)
+  (add-hook 'prog-mode-hook 'rainbow-mode)
+  (add-hook 'js2-mode-hook 'prettier-js-mode)
   (add-hook 'web-mode-hook 'prettier-js-mode)
   (add-hook 'typescript-mode-hook 'prettier-js-mode)
+  (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . rjsx-mode))
+
+  (with-eval-after-load 'rjsx-mode
+    (define-key rjsx-mode-map "<" nil)
+    (define-key rjsx-mode-map (kbd "C-d") nil)
+    (define-key rjsx-mode-map ">" nil))
 
   (setq prettier-js-args '(
                            "--semi"
@@ -626,6 +668,38 @@ before packages are loaded."
                            "--arrow-parens" "avoid"
                            "--trailing-comma" "all"
                            ))
+
+  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+  (add-hook 'emacs-lisp-mode-hook       'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook             'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook             'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook           'enable-paredit-mode)
+  (add-hook 'flycheck-mode-hook #'flycheck-clojure-setup)
+  (add-hook 'cider-mode-hook 'eldoc-mode)
+  (add-hook 'cider-repl-mode-hook (lambda ()
+                                    (setq cider-repl-history-file "~/.emacs.d/cider-history")
+                                    (turn-on-eldoc-mode)
+                                    (paredit-mode t)
+                                    (subword-mode t)))
+  (add-hook 'clojure-mode-hook
+            (lambda ()
+              (setq clojure-indent-style :always-align)
+              (define-clojure-indent
+                (defroutes 'defun)
+                (GET 2)
+                (POST 2)
+                (PUT 2)
+                (DELETE 2)
+                (PATCH 2)
+                (HEAD 2)
+                (ANY 2)
+                (context 2))
+              (rainbow-delimiters-mode 1)
+              (paredit-mode t)
+              (subword-mode t)))
+
   )
 
 
